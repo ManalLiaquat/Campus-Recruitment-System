@@ -5,7 +5,7 @@ import App from "../App";
 import Login from "../Screens/Login/Login";
 import SignUp from "../Screens/SignUp/SignUp";
 
-const CustomeRoutes = () => (
+const CustomRoutes = () => (
   <Router>
     <div>
       <Navbar />
@@ -17,4 +17,4 @@ const CustomeRoutes = () => (
   </Router>
 );
 
-export default CustomeRoutes;
+export default CustomRoutes;
