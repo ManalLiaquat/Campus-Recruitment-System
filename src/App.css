@@ -7,6 +7,10 @@
   height: 80px;
 }
 
+.My-app-logo {
+  animation: App-logo-spin infinite 5s linear;
+}
+
 .App-header {
   background-color: darkslategrey; /* #212529 */
   height: 150px;
