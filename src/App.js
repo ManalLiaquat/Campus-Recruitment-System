@@ -22,7 +22,7 @@ class App extends Component {
   componentDidMount() {
     fire.auth().onAuthStateChanged(user => {
       if (user) {
-        console.log(user.displayName + " user is logged in");
+        console.log(user.displayName + " is logged in");
       } else {
         console.log("user Not signed in");
       }
