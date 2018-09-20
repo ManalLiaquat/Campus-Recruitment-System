@@ -12,6 +12,13 @@ class Navbar extends Component {
     };
   }
 
+  authAs(authAs) {
+    console.log(authAs);
+    if (authAs) {
+      localStorage.setItem("authAs", authAs);
+    }
+  }
+
   componentDidMount() {
     fire.auth().onAuthStateChanged(user => {
       if (user) {
@@ -25,18 +32,17 @@ class Navbar extends Component {
   }
 
   render() {
-    const custom_style = {
-      display: "inline",
-      margin: "0px 5px",
-      backgroundColor: "lightgreen",
-      padding: "5px",
-      borderRadius: "2px"
-    };
     const { user } = this.state;
     return (
       <nav className="navbar navbar-expand-lg navbar-light navBG">
         <a class="navbar-brand" href="#">
-          <img src={logo} width="30" height="30" alt="logo" />
+          <img
+            src={logo}
+            className="My-app-logo"
+            width="30"
+            height="30"
+            alt="logo"
+          />
         </a>
         <button
           className="navbar-toggler"
@@ -59,41 +65,67 @@ class Navbar extends Component {
             </li>
             <li className="nav-item">
               <a className="nav-link" href="#">
-                Features
+                About
               </a>
             </li>
             <li className="nav-item">
               <a className="nav-link" href="#">
-                Pricing
+                Contact
               </a>
             </li>
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdownMenuLink"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                Dropdown link
-              </a>
-              <div
-                className="dropdown-menu bg-dark"
-                aria-labelledby="navbarDropdownMenuLink"
-              >
-                <a className="dropdown-item" href="#">
-                  Action
+            {user ? (
+              <li className="nav-item">
+                <a className="nav-link">
+                  <Logout />
                 </a>
-                <a className="dropdown-item" href="#">
-                  Another action
+              </li>
+            ) : (
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  href="#"
+                  id="navbarDropdownMenuLink"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  Login/Signup As
                 </a>
-                <a className="dropdown-item" href="#">
-                  Something else here
-                </a>
-              </div>
-            </li>
+                <div
+                  className="dropdown-menu bg-dark"
+                  aria-labelledby="navbarDropdownMenuLink"
+                >
+                  <Link
+                    className="dropdown-item"
+                    to="/login"
+                    onClick={() => {
+                      this.authAs("student");
+                    }}
+                  >
+                    Student
+                  </Link>
+                  <Link
+                    className="dropdown-item"
+                    to="/login"
+                    onClick={() => {
+                      this.authAs("company");
+                    }}
+                  >
+                    Company
+                  </Link>
+                  <Link
+                    className="dropdown-item"
+                    to="/login"
+                    onClick={() => {
+                      this.authAs("admin");
+                    }}
+                  >
+                    Admin
+                  </Link>
+                </div>
+              </li>
+            )}
           </ul>
         </div>
       </nav>
