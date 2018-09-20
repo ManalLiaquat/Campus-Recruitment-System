@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+// import { Link } from "react-router-dom";
 import fire from "../../config/fire";
 
 class Login extends Component {
@@ -19,6 +20,7 @@ class Login extends Component {
       .signInWithEmailAndPassword(userEmail, userPassword)
       .then(() => {
         alert("Successfully Login");
+        window.location = "/dashboard";
       })
       .catch(e => {
         alert("Error while loging in" + e);
