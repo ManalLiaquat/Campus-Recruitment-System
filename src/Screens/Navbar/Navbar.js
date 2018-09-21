@@ -35,7 +35,7 @@ class Navbar extends Component {
     const { user } = this.state;
     return (
       <nav className="navbar navbar-expand-lg navbar-light navBG">
-        <a class="navbar-brand" href="#">
+        <a className="navbar-brand" href="#">
           <img
             src={logo}
             className="My-app-logo"

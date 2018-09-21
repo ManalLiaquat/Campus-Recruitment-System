@@ -11,6 +11,7 @@ const Logout = () => {
           .signOut()
           .then(res => {
             alert("You are Logged Out");
+            window.location = "/";
           })
           .catch(err => {
             alert("Error during logging out \n" + err);
