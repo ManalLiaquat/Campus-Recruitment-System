@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import fire from "../../config/fire";
 
 class SignUp extends Component {
@@ -21,7 +22,7 @@ class SignUp extends Component {
       .then(data => {
         console.log(data);
         const { uid } = fire.auth().currentUser;
-        let studentObj = { name, email, uid, password };
+        let studentObj = { name, email, uid, password, authAs };
         fire
           .database()
           .ref(`/${authAs}_data`)
@@ -67,6 +68,13 @@ class SignUp extends Component {
         <button type="submit" onClick={this.signUp}>
           Sign Up
         </button>
+        <br />
+        <span>
+          Already a member?
+          <Link to="/login">
+            <button>LogIn</button>
+          </Link>
+        </span>
       </div>
     );
   }
