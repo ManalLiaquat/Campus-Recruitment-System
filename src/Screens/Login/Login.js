@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import fire from "../../config/fire";
 
 class Login extends Component {
@@ -19,6 +19,10 @@ class Login extends Component {
       .auth()
       .signInWithEmailAndPassword(userEmail, userPassword)
       .then(() => {
+        let { uid, email, displayName } = fire.auth().currentUser;
+        localStorage.setItem("displayName", displayName);
+        localStorage.setItem("email", email);
+        localStorage.setItem("uid", uid);
         alert("Successfully Login");
         window.location = "/dashboard";
       })
@@ -48,6 +52,13 @@ class Login extends Component {
         <button type="submit" onClick={this.logIn}>
           Log In
         </button>
+        <br />
+        <span>
+          Not a member?
+          <Link to="/signup">
+            <button>SignUp</button>
+          </Link>
+        </span>
       </div>
     );
   }
