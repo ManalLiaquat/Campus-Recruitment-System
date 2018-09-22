@@ -87,21 +87,6 @@ class StudentDash extends Component {
       });
   }
 
-  renderJobs() {
-    let { jobs } = this.state;
-    fire
-      .database()
-      .ref("/company_jobs")
-      .on("child_added", data => {
-        let job = data.val();
-        for (const key in job) {
-          console.log(job[key]);
-          jobs.push(job[key]);
-        }
-        this.setState({ jobs: jobs });
-      });
-  }
-
   mySavedInfo() {
     const { resume } = this.state;
     console.log(resume);
@@ -327,6 +312,65 @@ class StudentDash extends Component {
     );
   }
 
+  renderJobs() {
+    let { jobs } = this.state;
+    // document.getElementById("jobs");
+    fire
+      .database()
+      .ref("/company_jobs")
+      .on("child_added", data => {
+        let job = data.val();
+        for (const key in job) {
+          console.log(job[key]);
+          jobs.push(job[key]);
+        }
+        this.setState({ jobs: jobs });
+      });
+  }
+
+  apply(companyUID, jobTitle, jobDescription) {
+    fire
+      .database()
+      .ref(`/student_resumes`)
+      .child(fire.auth().currentUser.uid)
+      .once("value", data => {
+        let resume = data.val();
+        fire
+          .database()
+          .ref(
+            `/company_data/${companyUID}/inbox/${fire.auth().currentUser.uid}/`
+          )
+          .push({
+            jobTitle,
+            jobDescription,
+            resumeOfApplicant: resume
+          })
+          .then(res => {
+            fire
+              .database()
+              .ref(`/company_data/${companyUID}`)
+              .once("value", data => {
+                let companyInfo = data.val();
+                // console.log(companyInfo);
+                fire
+                  .database()
+                  .ref(
+                    `/student_data/${
+                      fire.auth().currentUser.uid
+                    }/my_applications/${companyUID}`
+                  )
+                  .push({
+                    jobTitle,
+                    jobDescription,
+                    companyName: companyInfo.name,
+                    companyEmail: companyInfo.email
+                  });
+                alert("Your resume has been successfully submitted");
+              });
+          });
+      });
+  }
+
   render() {
     const authAs = localStorage.getItem("authAs");
     const { checkInfo, content, jobs } = this.state;
@@ -335,13 +379,6 @@ class StudentDash extends Component {
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-9">
-              {/* <h1
-                style={{
-                  textTransform: "uppercase"
-                }}
-              >
-                Dashboard
-              </h1> */}
               <br />
               {content === "myInfo" ? (
                 checkInfo ? (
@@ -365,7 +402,7 @@ class StudentDash extends Component {
                             <div className="row">
                               <div className="col-11">{job.companyName}</div>
                               <div className="col-1">
-                                <i className="fa fa-heart-o" />
+                                <i className="fa fa-star" />
                               </div>
                             </div>
                           </div>
@@ -387,7 +424,15 @@ class StudentDash extends Component {
                             <div className="row">
                               <div className="col-md-10">Time: {job.time}</div>
                               <div className="col-md-2">
-                                <button className="btn btn-block btn-sm btn-primary">
+                                <button
+                                  className="btn btn-block btn-sm btn-primary"
+                                  onClick={this.apply.bind(
+                                    this,
+                                    job.uid,
+                                    job.title,
+                                    job.description
+                                  )}
+                                >
                                   Apply
                                 </button>
                               </div>
