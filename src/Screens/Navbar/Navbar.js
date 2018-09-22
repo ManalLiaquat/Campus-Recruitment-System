@@ -74,10 +74,29 @@ class Navbar extends Component {
               </a>
             </li>
             {user ? (
-              <li className="nav-item">
-                <a className="nav-link">
-                  <Logout />
+              <li className="nav-item dropdown">
+                <a
+                  href="JavaScript:void(0)"
+                  className="nav-link dropdown-toggle"
+                  id="profileDropdownList"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  Profile
                 </a>
+                <div
+                  className="dropdown-menu bg-dark"
+                  aria-labelledby="profileDropdownList"
+                >
+                  <Link className="dropdown-item" to="/dashboard">
+                    Dashboard
+                  </Link>
+                  <a href="JavaScript:void(0)" className="dropdown-item">
+                    <Logout />
+                  </a>
+                </div>
               </li>
             ) : (
               <li className="nav-item dropdown">
