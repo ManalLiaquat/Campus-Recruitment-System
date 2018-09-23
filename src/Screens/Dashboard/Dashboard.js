@@ -1,14 +1,20 @@
 import React, { Component } from "react";
 import fire from "../../config/fire";
 import StudentDash from "./SubDashboards/StudentDash";
+import CompanyDash from "./SubDashboards/CompanyDash";
+import AdminDash from "./SubDashboards/AdminDash";
 
 class Dashboard extends Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {
+      authAs: null
+    };
   }
 
   componentDidMount() {
+    const authAs = localStorage.getItem("authAs");
+    this.setState({ authAs });
     fire.auth().onAuthStateChanged(user => {
       if (user) {
         console.log(user.displayName + " is logged in");
@@ -19,11 +25,20 @@ class Dashboard extends Component {
   }
 
   render() {
-    const authAs = localStorage.getItem("authAs");
+    const { authAs } = this.state;
     return (
       <div>
         <div className="container-fluid">
-          <StudentDash />
+          {authAs === "student" ? (
+            <StudentDash />
+          ) : authAs === "company" ? (
+            <CompanyDash />
+          ) : authAs === "admin" ? (
+            <AdminDash />
+          ) : (
+            <br />
+          )}
+
           {/* <div className="row">
             <div className="col-md-3">
               
