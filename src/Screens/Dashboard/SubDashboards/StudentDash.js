@@ -18,7 +18,8 @@ class StudentDash extends Component {
       checkInfo: false,
       resume: null,
       content: "myInfo",
-      jobs: []
+      jobs: [],
+      myApplications: []
     };
     this.submitMyInfo = this.submitMyInfo.bind(this);
   }
@@ -324,7 +325,7 @@ class StudentDash extends Component {
           console.log(job[key]);
           jobs.push(job[key]);
         }
-        this.setState({ jobs: jobs });
+        this.setState({ jobs });
       });
   }
 
@@ -371,9 +372,25 @@ class StudentDash extends Component {
       });
   }
 
+  myApplications() {
+    const { myApplications } = this.state;
+    fire
+      .database()
+      .ref(`/student_data/${fire.auth().currentUser.uid}/my_applications`)
+      .on("child_added", data => {
+        let myApps = data.val();
+        // console.log(myApps);
+        for (const key in myApps) {
+          myApplications.push(myApps[key]);
+        }
+        // console.log(myApplications)
+        this.setState({ myApplications });
+      });
+  }
+
   render() {
     const authAs = localStorage.getItem("authAs");
-    const { checkInfo, content, jobs } = this.state;
+    const { checkInfo, content, jobs, myApplications } = this.state;
     return (
       <div>
         <div className="container-fluid">
@@ -387,7 +404,32 @@ class StudentDash extends Component {
                   this.myUnsavedInfo()
                 )
               ) : content === "myApplications" ? (
-                <h1 className="text-uppercase text-dark">My Applications</h1>
+                <div>
+                  <h1 className="text-uppercase text-success">
+                    My Applications
+                  </h1>
+                  {myApplications.map((v, i) => {
+                    return (
+                      <div
+                        className="card mb-3 border-primary"
+                        key={`${v}_${i}`}
+                      >
+                        <div className="card-body">
+                          <h5 className="card-title text-primary">
+                            Job Title: {v.jobTitle}
+                          </h5>
+                          <p className="card-text">
+                            Description: {v.jobDescription}
+                          </p>
+                          <p className="card-text">Company: {v.companyName}</p>
+                          <p className="card-text">
+                            Company Email: {v.companyEmail}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               ) : content === "findAJob" ? (
                 <div>
                   <h1 className="text-uppercase text-danger">Find A Job</h1>
@@ -409,7 +451,7 @@ class StudentDash extends Component {
                           <div className="card-body">
                             <h5 className="card-title">{job.title}</h5>
                             <p className="card-text">{job.description}</p>
-                            <div>Skills: {job.skills}</div>
+                            <p className="card-text">Skills: {job.skills}</p>
                             <div
                               className="row text-warning"
                               style={{ fontSize: "10pt" }}
@@ -466,6 +508,7 @@ class StudentDash extends Component {
                     className="btn btn-success btn-block"
                     onClick={() => {
                       this.setState({ content: "myApplications" });
+                      this.myApplications();
                     }}
                   >
                     My Applications
