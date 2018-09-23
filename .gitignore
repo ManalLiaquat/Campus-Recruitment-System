@@ -21,3 +21,7 @@ yarn-debug.log*
 yarn-error.log*
 *.txt
 fire.js
+/.firebaserc
+/database.rules.json
+/firebase.json
+.firebase/hosting.YnVpbGQ.cache
