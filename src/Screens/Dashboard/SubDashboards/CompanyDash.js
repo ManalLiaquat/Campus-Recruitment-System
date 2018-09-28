@@ -15,9 +15,11 @@ class CompanyDash extends Component {
       uid: localStorage.getItem('uid'),
       time: new Date().toLocaleString(),
       // other states
-      show: "newJob"
+      show: "findStudents",
+      studentArr: []
     };
     this.postAJob_FUNC = this.postAJob_FUNC.bind(this);
+    this.findStudents_FUNC = this.findStudents_FUNC.bind(this);
   }
 
   postAJob_FUNC() {
@@ -62,8 +64,28 @@ class CompanyDash extends Component {
     )
   }
 
+  findStudents_FUNC() {
+    let { studentArr } = this.state
+    fire.database().ref('/student_resumes').once("value", data => {
+      let studentData = data.val()
+      // console.log(studentData);
+      for (const key in studentData) {
+        studentArr.push(studentData[key])
+      }
+      this.setState({ studentArr })
+    })
+  }
+
+  hire(studentData) {
+    fire.database().ref(`/company_data/${fire.auth().currentUser.uid}/hire/${studentData.uid}/`).set(studentData).then(() => { alert('Notification sent') })
+  }
+
+  componentDidMount() {
+    this.findStudents_FUNC();
+  }
+
   render() {
-    const { show } = this.state
+    const { show, studentArr } = this.state
     return (
       <div className="container-fluid">
         {/* <p>CompanyDash</p> */}
@@ -74,7 +96,51 @@ class CompanyDash extends Component {
               show === "newJob"
                 ? this.postAJob_JSX()
                 : show === "findStudents"
-                  ? <div>RENDER: Find Students</div>
+                  ? <div>
+                    {
+                      studentArr.map((v) => {
+                        return <div className="card border-danger mb-3" key={`${v.uid}`}>
+                          <h5 className="card-header text-danger">Student Name: {v.name}</h5>
+                          <div className="card-body">
+                            {/* <h5 className="card-title"></h5> */}
+                            <div className="row">
+                              <div className="col">
+                                <p className="card-text">Father Name: {v.fatherName}</p>
+                              </div>
+                              <div className="col">
+                                <p className="card-text">DOB: {v.dob}</p>
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col">
+                                <p className="card-text">Experience: {v.experience}</p>
+                              </div>
+                              <div className="col">
+                                <p className="card-text" style={{ fontSize: '10pt', color: "black" }} >Home Address: {v.address}</p>
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col">
+                                <p className="card-text">Percentage: {v.percentage}</p>
+                              </div>
+                              <div className="col">
+                                <p className="card-text">Qualification: {v.qualification}</p>
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col">
+                                <p className="card-text">Email: {v.email}</p>
+                              </div>
+                              <div className="col">
+                                <p className="card-text">Phone: {v.phone}</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="card-footer"><button className="btn btn-outline-danger pull-right" onClick={() => { this.hire(v) }}>Hire</button></div>
+                        </div>
+                      })
+                    }
+                  </div>
                   : show === "inbox"
                     ? <div>RENDER: Inbox</div>
                     : show === "myPosts"
@@ -86,20 +152,24 @@ class CompanyDash extends Component {
             <br />
             <button className="btn btn-block btn-sm btn-outline-primary" onClick={() => {
               this.setState({ show: "newJob" });
+              window.location.hash = "newJob"
             }}>
               Post a new job
             </button>
             <button className="btn btn-block btn-sm btn-primary" onClick={() => {
               this.setState({ show: "findStudents" });
+              window.location.hash = "findStudents"
             }}>
               Find Students
             </button>
             <hr />
             <button className="btn btn-block btn-sm btn-primary" onClick={() => {
               this.setState({ show: "inbox" });
+              window.location.hash = "inbox"
             }}>Inbox</button>
             <button className="btn btn-block btn-sm btn-primary" onClick={() => {
               this.setState({ show: "myPosts" });
+              window.location.hash = "myPosts"
             }}>
               My Posts
             </button>
