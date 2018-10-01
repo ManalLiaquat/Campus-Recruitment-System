@@ -15,11 +15,13 @@ class CompanyDash extends Component {
       uid: localStorage.getItem("uid"),
       time: new Date().toLocaleString(),
       // other states
-      show: "findStudents",
-      studentArr: []
+      show: "inbox",
+      studentArr: [],
+      inbox: []
     };
     this.postAJob_FUNC = this.postAJob_FUNC.bind(this);
     this.findStudents_FUNC = this.findStudents_FUNC.bind(this);
+    this.inbox_JSX = this.inbox_JSX.bind(this)
   }
 
   postAJob_FUNC() {
@@ -153,16 +155,47 @@ class CompanyDash extends Component {
       )
       .set(studentData)
       .then(() => {
+        fire.database().ref(`/student_data/${studentData.uid}/inbox/${fire.auth().currentUser.uid}/`)
+          .set({
+            companyName: fire.auth().currentUser.displayName,
+            companyEmail: fire.auth().currentUser.email,
+            uid: fire.auth().currentUser.uid
+          })
         alert("Notification sent");
       });
   }
 
+  inbox_JSX() {
+    const { inbox } = this.state
+    fire.database().ref(`/company_data/${fire.auth().currentUser.uid}/inbox/`).once('value', data => {
+      let allData = data.val();
+      for (const student_uid in allData) {
+        for (const pushKey in allData[student_uid]) {
+          // console.log(allData[student_uid][pushKey]);
+          // console.log(student_uid);
+          inbox.push(allData[student_uid][pushKey])
+        }
+      }
+      this.setState({ inbox })
+    })
+  }
+
   componentDidMount() {
-    this.findStudents_FUNC();
+    fire.auth().onAuthStateChanged(user => {
+      if (user) {
+        console.log(user.displayName + " is logged in");
+        this.findStudents_FUNC();
+        this.inbox_JSX();
+      } else {
+        console.log("user Not signed in");
+      }
+    });
   }
 
   render() {
-    const { show, studentArr } = this.state;
+    const { show, studentArr, inbox } = this.state;
+    console.log(inbox);
+
     return (
       <div className="container-fluid">
         {/* <p>CompanyDash</p> */}
@@ -173,8 +206,8 @@ class CompanyDash extends Component {
               this.postAJob_JSX()
             ) : show === "findStudents" ? (
               <div>
-                <table class="table table-hover table-responsive">
-                  <thead class="thead-dark">
+                <table className="table table-hover table-responsive table-bordered">
+                  <thead className="thead-dark">
                     <tr>
                       <th scope="col">#</th>
                       <th scope="col">Student Name</th>
@@ -204,7 +237,7 @@ class CompanyDash extends Component {
                           <td>{v.experience}</td>
                           <td>{v.address}</td>
                           <td>
-                            <button className="btn btn-danger btn-flat">
+                            <button className="btn btn-danger btn-flat" onClick={() => { this.hire(v) }}>
                               Hire
                             </button>
                           </td>
@@ -215,12 +248,55 @@ class CompanyDash extends Component {
                 </table>
               </div>
             ) : show === "inbox" ? (
-              <div>RENDER: Inbox</div>
+              <div>
+                <table className="table table-responsive table-bordered">
+                  <thead className="thead-dark">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Job Title</th>
+                      <th scope=" ">Job Description</th>
+                      <th scope="col">Student Name</th>
+                      <th scope="col">DOB</th>
+                      <th scope="col">Phone</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Qualification</th>
+                      <th scope="col">Percentage</th>
+                      <th scope="col">Experience</th>
+                      <th scope="col">Hire</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {inbox.map((data, i) => {
+                      let v = data.resumeOfApplicant;
+                      return (
+                        <tr key={`${v.jobTitle}_${i}`}>
+                          <th scope="row">{i + 1}</th>
+                          <td>{data.jobTitle}</td>
+                          <td>{data.jobDescription}</td>
+                          <td>{v.name}</td>
+                          <td>{v.dob}</td>
+                          <td>{v.phone}</td>
+                          <td>{v.email}</td>
+                          <td>{v.qualification}</td>
+                          <td>{v.percentage}</td>
+                          <td>{v.experience}</td>
+                          <td>
+                            <button className="btn btn-outline-success btn-block" onClick={() => { /* some func here */ }}>
+                              Accept
+                            </button>
+                            <button className="btn btn-outline-danger btn-block" onClick={() => { /* some func here */ }}>
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             ) : show === "myPosts" ? (
               <div>RENDER: My Posts</div>
-            ) : (
-              <br />
-            )}
+            ) : <br />}
           </div>
           <div className="col-md-2">
             <br />
