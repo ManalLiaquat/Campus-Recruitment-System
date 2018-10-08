@@ -15,13 +15,15 @@ class CompanyDash extends Component {
       uid: localStorage.getItem("uid"),
       time: new Date().toLocaleString(),
       // other states
-      show: "inbox",
+      show: "myPosts",
       studentArr: [],
-      inbox: []
+      inbox: [],
+      myPosts: []
     };
     this.postAJob_FUNC = this.postAJob_FUNC.bind(this);
     this.findStudents_FUNC = this.findStudents_FUNC.bind(this);
-    this.inbox_JSX = this.inbox_JSX.bind(this)
+    this.inbox_FUNC = this.inbox_FUNC.bind(this);
+    this.myPosts_FUNC = this.myPosts_FUNC.bind(this);
   }
 
   postAJob_FUNC() {
@@ -155,37 +157,62 @@ class CompanyDash extends Component {
       )
       .set(studentData)
       .then(() => {
-        fire.database().ref(`/student_data/${studentData.uid}/inbox/${fire.auth().currentUser.uid}/`)
+        fire
+          .database()
+          .ref(
+            `/student_data/${studentData.uid}/inbox/${
+              fire.auth().currentUser.uid
+            }/`
+          )
           .set({
             companyName: fire.auth().currentUser.displayName,
             companyEmail: fire.auth().currentUser.email,
             uid: fire.auth().currentUser.uid
-          })
+          });
         alert("Notification sent");
       });
   }
 
-  inbox_JSX() {
-    const { inbox } = this.state
-    fire.database().ref(`/company_data/${fire.auth().currentUser.uid}/inbox/`).once('value', data => {
-      let allData = data.val();
-      for (const student_uid in allData) {
-        for (const pushKey in allData[student_uid]) {
-          // console.log(allData[student_uid][pushKey]);
-          // console.log(student_uid);
-          inbox.push(allData[student_uid][pushKey])
+  inbox_FUNC() {
+    const { inbox } = this.state;
+    fire
+      .database()
+      .ref(`/company_data/${fire.auth().currentUser.uid}/inbox/`)
+      .once("value", data => {
+        let allData = data.val();
+        for (const student_uid in allData) {
+          for (const pushKey in allData[student_uid]) {
+            // console.log(allData[student_uid][pushKey]);
+            // console.log(student_uid);
+            inbox.push(allData[student_uid][pushKey]);
+          }
         }
-      }
-      this.setState({ inbox })
-    })
+        this.setState({ inbox });
+      });
+  }
+
+  myPosts_FUNC() {
+    const { myPosts } = this.state;
+    fire
+      .database()
+      .ref(`/company_jobs/${fire.auth().currentUser.uid}/`)
+      .on("value", data => {
+        let allPosts = data.val();
+        for (const key in allPosts) {
+          // console.log(allPosts[key]);
+          myPosts.push(allPosts[key]);
+        }
+      });
+    this.setState({ myPosts });
   }
 
   componentDidMount() {
     fire.auth().onAuthStateChanged(user => {
       if (user) {
         console.log(user.displayName + " is logged in");
+        this.myPosts_FUNC();
         this.findStudents_FUNC();
-        this.inbox_JSX();
+        this.inbox_FUNC();
       } else {
         console.log("user Not signed in");
       }
@@ -193,7 +220,7 @@ class CompanyDash extends Component {
   }
 
   render() {
-    const { show, studentArr, inbox } = this.state;
+    const { show, studentArr, inbox, myPosts } = this.state;
     console.log(inbox);
 
     return (
@@ -206,6 +233,7 @@ class CompanyDash extends Component {
               this.postAJob_JSX()
             ) : show === "findStudents" ? (
               <div>
+                <h1 className="text-danger">Find Students</h1>
                 <table className="table table-hover table-responsive table-bordered">
                   <thead className="thead-dark">
                     <tr>
@@ -237,7 +265,12 @@ class CompanyDash extends Component {
                           <td>{v.experience}</td>
                           <td>{v.address}</td>
                           <td>
-                            <button className="btn btn-danger btn-flat" onClick={() => { this.hire(v) }}>
+                            <button
+                              className="btn btn-danger btn-flat"
+                              onClick={() => {
+                                this.hire(v);
+                              }}
+                            >
                               Hire
                             </button>
                           </td>
@@ -249,12 +282,13 @@ class CompanyDash extends Component {
               </div>
             ) : show === "inbox" ? (
               <div>
+                <h1 className="text-danger">Inbox</h1>
                 <table className="table table-responsive table-bordered">
                   <thead className="thead-dark">
                     <tr>
                       <th scope="col">#</th>
                       <th scope="col">Job Title</th>
-                      <th scope=" ">Job Description</th>
+                      <th scope="col">Job Description</th>
                       <th scope="col">Student Name</th>
                       <th scope="col">DOB</th>
                       <th scope="col">Phone</th>
@@ -281,10 +315,20 @@ class CompanyDash extends Component {
                           <td>{v.percentage}</td>
                           <td>{v.experience}</td>
                           <td>
-                            <button className="btn btn-outline-success btn-block" onClick={() => { /* some func here */ }}>
+                            <button
+                              className="btn btn-outline-success btn-block"
+                              onClick={() => {
+                                /* some func here */
+                              }}
+                            >
                               Accept
                             </button>
-                            <button className="btn btn-outline-danger btn-block" onClick={() => { /* some func here */ }}>
+                            <button
+                              className="btn btn-outline-danger btn-block"
+                              onClick={() => {
+                                /* some func here */
+                              }}
+                            >
                               Reject
                             </button>
                           </td>
@@ -295,8 +339,40 @@ class CompanyDash extends Component {
                 </table>
               </div>
             ) : show === "myPosts" ? (
-              <div>RENDER: My Posts</div>
-            ) : <br />}
+              <div>
+                <h1 className="text-danger">My Posts</h1>
+                <table className="table table-responsive table-bordered">
+                  <thead className="thead-dark">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Job Title</th>
+                      <th scope="col">Job Description</th>
+                      <th scope="col">Salary</th>
+                      <th scope="col">Eligibility</th>
+                      <th scope="col">Skills</th>
+                      <th scope="col">Posting Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {myPosts.map((v, i) => {
+                      return (
+                        <tr key={`${v.title}_${i}`}>
+                          <th scope="row">{i + 1}</th>
+                          <td>{v.title}</td>
+                          <td>{v.description}</td>
+                          <td>{v.salary}</td>
+                          <td>{v.eligibility}</td>
+                          <td>{v.skills}</td>
+                          <td>{v.time}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <br />
+            )}
           </div>
           <div className="col-md-2">
             <br />
