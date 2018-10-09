@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import fire from "../../../config/fire";
+import moment from "moment";
+
 
 class StudentDash extends Component {
   constructor() {
@@ -464,7 +466,7 @@ class StudentDash extends Component {
                           </div>
                           <div className="card-footer">
                             <div className="row">
-                              <div className="col-md-10">Time: {job.time}</div>
+                              <div className="col-md-10">Post Date: {moment(job.time).fromNow()}</div>
                               <div className="col-md-2">
                                 <button
                                   className="btn btn-block btn-sm btn-primary"

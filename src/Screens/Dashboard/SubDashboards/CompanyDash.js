@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import fire from "../../../config/fire";
+import moment from "moment";
 
 class CompanyDash extends Component {
   constructor() {
@@ -13,7 +14,7 @@ class CompanyDash extends Component {
       skills: "",
       companyName: localStorage.getItem("displayName"),
       uid: localStorage.getItem("uid"),
-      time: new Date().toLocaleString(),
+      time: Date.now(),
       // other states
       show: "myPosts",
       studentArr: [],
@@ -363,7 +364,7 @@ class CompanyDash extends Component {
                           <td>{v.salary}</td>
                           <td>{v.eligibility}</td>
                           <td>{v.skills}</td>
-                          <td>{v.time}</td>
+                          <td>{moment(v.time).fromNow()}</td>
                         </tr>
                       );
                     })}
