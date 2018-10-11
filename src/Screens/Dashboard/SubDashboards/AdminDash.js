@@ -6,7 +6,10 @@ class AdminDash extends Component {
     super();
     this.state = {
       show: "student",
+
       stdLogin_data: [],
+      stdLoginEdit: null,
+
       cmpLogin_date: []
     };
   }
@@ -24,6 +27,87 @@ class AdminDash extends Component {
         this.setState({ stdLogin_data });
       });
   }
+  studentLogin_modal() {
+    const { stdLoginEdit } = this.state;
+    return (
+      <div
+        className="modal fade"
+        id="studentLoginModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="studentLoginModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="studentLoginModalLabel">
+                Edit
+              </h5>
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              Name:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdLoginEdit.name}
+                onChange={e => {
+                  stdLoginEdit.name = e.target.value;
+                }}
+              />
+              Email:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdLoginEdit.email}
+                onChange={e => {
+                  stdLoginEdit.email = e.target.value;
+                }}
+              />
+              Password:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdLoginEdit.password}
+                onChange={e => {
+                  stdLoginEdit.password = e.target.value;
+                }}
+              />
+              UID:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdLoginEdit.uid}
+                onChange={e => {
+                  stdLoginEdit.uid = e.target.value;
+                }}
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" className="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   componentDidMount() {
     fire.auth().onAuthStateChanged(user => {
@@ -36,7 +120,7 @@ class AdminDash extends Component {
   }
 
   render() {
-    const { show, stdLogin_data } = this.state;
+    const { show, stdLogin_data, stdLoginEdit } = this.state;
 
     return (
       <div>
@@ -74,7 +158,6 @@ class AdminDash extends Component {
                     <th scope="col">Email</th>
                     <th scope="col">Password</th>
                     <th scope="col">UID</th>
-                    <th scope="col">Inbox</th>
                     <th scope="col">Manage</th>
                   </tr>
                 </thead>
@@ -88,12 +171,14 @@ class AdminDash extends Component {
                         <td>{v.password}</td>
                         <td>{v.uid}</td>
                         <td>
-                          <button className="btn btn-info btn-block btn-sm">
-                            <i className="fa fa-info" />
-                          </button>
-                        </td>
-                        <td>
-                          <button className="btn btn-sm btn-success">
+                          <button
+                            className="btn btn-sm btn-success"
+                            data-toggle="modal"
+                            data-target="#studentLoginModal"
+                            onClick={() => {
+                              this.setState({ stdLoginEdit: v });
+                            }}
+                          >
                             <i className="fa fa-edit" />
                           </button>
                           <button className="btn btn-sm btn-danger">
@@ -105,6 +190,7 @@ class AdminDash extends Component {
                   })}
                 </tbody>
               </table>
+              {stdLoginEdit && this.studentLogin_modal()}
             </div>
             <div
               className="col-md-6"
