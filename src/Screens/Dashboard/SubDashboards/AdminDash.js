@@ -61,6 +61,7 @@ class AdminDash extends Component {
                 value={stdLoginEdit.name}
                 onChange={e => {
                   stdLoginEdit.name = e.target.value;
+                  this.setState({ stdLoginEdit });
                 }}
               />
               Email:{" "}
@@ -70,6 +71,7 @@ class AdminDash extends Component {
                 value={stdLoginEdit.email}
                 onChange={e => {
                   stdLoginEdit.email = e.target.value;
+                  this.setState({ stdLoginEdit });
                 }}
               />
               Password:{" "}
@@ -79,6 +81,7 @@ class AdminDash extends Component {
                 value={stdLoginEdit.password}
                 onChange={e => {
                   stdLoginEdit.password = e.target.value;
+                  this.setState({ stdLoginEdit });
                 }}
               />
               UID:{" "}
@@ -88,6 +91,7 @@ class AdminDash extends Component {
                 value={stdLoginEdit.uid}
                 onChange={e => {
                   stdLoginEdit.uid = e.target.value;
+                  this.setState({ stdLoginEdit });
                 }}
               />
             </div>
@@ -99,7 +103,18 @@ class AdminDash extends Component {
               >
                 Close
               </button>
-              <button type="button" className="btn btn-primary">
+              <button
+                type="button"
+                className="btn btn-primary"
+                data-dismiss="modal"
+                onClick={() => {
+                  fire
+                    .database()
+                    .ref(`/student_data/${stdLoginEdit.uid}`)
+                    .set(stdLoginEdit);
+                  this.setState({ stdLoginEdit });
+                }}
+              >
                 Save changes
               </button>
             </div>
