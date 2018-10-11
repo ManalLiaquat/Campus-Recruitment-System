@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import fire from "../../config/fire";
+// import fire from "../../config/fire";
 import StudentDash from "./SubDashboards/StudentDash";
 import CompanyDash from "./SubDashboards/CompanyDash";
 import AdminDash from "./SubDashboards/AdminDash";
@@ -15,13 +15,13 @@ class Dashboard extends Component {
   componentDidMount() {
     const authAs = localStorage.getItem("authAs");
     this.setState({ authAs });
-    fire.auth().onAuthStateChanged(user => {
-      if (user) {
-        console.log(user.displayName + " is logged in");
-      } else {
-        console.log("user Not signed in");
-      }
-    });
+    // fire.auth().onAuthStateChanged(user => {
+    //   if (user) {
+    //     // console.log(user.displayName + " is logged in");
+    //   } else {
+    //     // console.log("user Not signed in");
+    //   }
+    // });
   }
 
   render() {

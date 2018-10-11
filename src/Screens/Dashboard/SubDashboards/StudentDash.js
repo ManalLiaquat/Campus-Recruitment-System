@@ -62,7 +62,7 @@ class StudentDash extends Component {
         experience,
         uid: fire.auth().currentUser.uid
       };
-      console.log(studentResume);
+      // console.log(studentResume);
       fire
         .database()
         .ref(`/student_resumes`)
@@ -92,7 +92,7 @@ class StudentDash extends Component {
 
   mySavedInfo() {
     const { resume } = this.state;
-    console.log(resume);
+    // console.log(resume);
     return (
       <div>
         <h1 className="text-uppercase text-primary">My Info</h1>
@@ -324,7 +324,7 @@ class StudentDash extends Component {
       .on("child_added", data => {
         let job = data.val();
         for (const key in job) {
-          console.log(job[key]);
+          // console.log(job[key]);
           jobs.push(job[key]);
         }
         this.setState({ jobs });

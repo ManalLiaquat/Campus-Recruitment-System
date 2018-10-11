@@ -210,19 +210,19 @@ class CompanyDash extends Component {
   componentDidMount() {
     fire.auth().onAuthStateChanged(user => {
       if (user) {
-        console.log(user.displayName + " is logged in");
+        // console.log(user.displayName + " is logged in");
         this.myPosts_FUNC();
         this.findStudents_FUNC();
         this.inbox_FUNC();
       } else {
-        console.log("user Not signed in");
+        // console.log("user Not signed in");
       }
     });
   }
 
   render() {
     const { show, studentArr, inbox, myPosts } = this.state;
-    console.log(inbox);
+    // console.log(inbox);
 
     return (
       <div className="container-fluid">
@@ -297,7 +297,7 @@ class CompanyDash extends Component {
                       <th scope="col">Qualification</th>
                       <th scope="col">Percentage</th>
                       <th scope="col">Experience</th>
-                      <th scope="col">Hire</th>
+                      {/* <th scope="col">Hire</th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -315,11 +315,11 @@ class CompanyDash extends Component {
                           <td>{v.qualification}</td>
                           <td>{v.percentage}</td>
                           <td>{v.experience}</td>
-                          <td>
+                          {/* <td>
                             <button
                               className="btn btn-outline-success btn-block"
                               onClick={() => {
-                                /* some func here */
+                                // some func here
                               }}
                             >
                               Accept
@@ -327,12 +327,12 @@ class CompanyDash extends Component {
                             <button
                               className="btn btn-outline-danger btn-block"
                               onClick={() => {
-                                /* some func here */
+                                // some func here 
                               }}
                             >
                               Reject
                             </button>
-                          </td>
+                          </td> */}
                         </tr>
                       );
                     })}
