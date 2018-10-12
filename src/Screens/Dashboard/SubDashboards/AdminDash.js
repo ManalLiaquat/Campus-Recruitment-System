@@ -8,11 +8,13 @@ class AdminDash extends Component {
       show: "student",
 
       stdLogin_data: [],
-      stdLoginEdit: null,
+      stdLoginEdit: {},
+      stdResume: {},
 
       cmpLogin_date: []
     };
     this.studentLogin_remove = this.studentLogin_remove.bind(this);
+    this.studentLogin_resume = this.studentLogin_resume.bind(this);
   }
 
   studentLogin_FUNC() {
@@ -21,26 +23,32 @@ class AdminDash extends Component {
       .database()
       .ref("/student_data")
       .on("child_added", data => {
-        let obj = data.val();
-        stdLogin_data.push(obj);
-        this.setState({ stdLogin_data });
+        fire
+          .database()
+          .ref("/student_resumes")
+          .on("child_added", resume => {
+            let obj = data.val();
+            obj.resume = resume.val();
+            stdLogin_data.push(obj);
+            this.setState({ stdLogin_data });
+          });
       });
   }
   studentLogin_modal() {
-    const { stdLoginEdit } = this.state;
+    let { stdLoginEdit } = this.state;
     return (
       <div
         className="modal fade"
-        id="studentLoginModal"
-        tabindex="-1"
+        id="studentLoginModal1"
+        tabIndex="-1"
         role="dialog"
-        aria-labelledby="studentLoginModalLabel"
+        aria-labelledby="studentLoginModal1Label"
         aria-hidden="true"
       >
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="studentLoginModalLabel">
+              <h5 className="modal-title" id="studentLoginModal1Label">
                 Edit
               </h5>
               <button
@@ -122,6 +130,152 @@ class AdminDash extends Component {
       </div>
     );
   }
+  studentLogin_resume() {
+    let { stdResume } = this.state;
+    return (
+      <div
+        className="modal fade"
+        id="studentLoginModal2"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="studentLoginModal2Label"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="studentLoginModal2Label">
+                Edit
+              </h5>
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              Name:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdResume.name}
+                onChange={e => {
+                  stdResume.name = e.target.value;
+                  this.setState({ stdResume });
+                }}
+              />
+              Father Name:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdResume.fatherName}
+                onChange={e => {
+                  stdResume.fatherName = e.target.value;
+                  this.setState({ stdResume });
+                }}
+              />
+              DOB:{" "}
+              <input
+                type="date"
+                className="form-control"
+                value={stdResume.dob}
+                onChange={e => {
+                  stdResume.dob = e.target.value;
+                  this.setState({ stdResume });
+                }}
+              />
+              Phone:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdResume.phone}
+                onChange={e => {
+                  stdResume.phone = e.target.value;
+                  this.setState({ stdResume });
+                }}
+              />
+              Email :
+              <input
+                type="text"
+                className="form-control"
+                value={stdResume.email}
+                onChange={e => {
+                  stdResume.email = e.target.value;
+                  this.setState({ stdResume });
+                }}
+              />
+              Qualification:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdResume.qualification}
+                onChange={e => {
+                  stdResume.qualification = e.target.value;
+                  this.setState({ stdResume });
+                }}
+              />
+              Percentage:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdResume.percentage}
+                onChange={e => {
+                  stdResume.percentage = e.target.value;
+                  this.setState({ stdResume });
+                }}
+              />
+              Experience:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdResume.experience}
+                onChange={e => {
+                  stdResume.experience = e.target.value;
+                  this.setState({ stdResume });
+                }}
+              />
+              Address:{" "}
+              <input
+                type="text"
+                className="form-control"
+                value={stdResume.address}
+                onChange={e => {
+                  stdResume.address = e.target.value;
+                  this.setState({ stdResume });
+                }}
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                data-dismiss="modal"
+                onClick={() => {
+                  fire
+                    .database()
+                    .ref(`/student_resumes/${stdResume.uid}`)
+                    .set(stdResume);
+                  this.setState({ stdResume });
+                }}
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   studentLogin_remove(uid) {
     fire
       .database()
@@ -144,7 +298,7 @@ class AdminDash extends Component {
   }
 
   render() {
-    const { show, stdLogin_data, stdLoginEdit } = this.state;
+    const { show, stdLogin_data, stdLoginEdit, stdResume } = this.state;
 
     return (
       <div>
@@ -174,14 +328,15 @@ class AdminDash extends Component {
               }}
             >
               <h3 className="text-center">Students login detail</h3>
-              <table class="table table-sm table-hover table-striped table-responsive">
-                <thead class="thead-dark">
+              <table className="table table-sm table-hover table-striped table-responsive">
+                <thead className="thead-dark">
                   <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">Password</th>
                     <th scope="col">UID</th>
+                    <th scope="col">Resume</th>
                     <th scope="col">Manage</th>
                   </tr>
                 </thead>
@@ -196,9 +351,21 @@ class AdminDash extends Component {
                         <td>{v.uid}</td>
                         <td>
                           <button
+                            className="btn btn-info btn-sm btn-block"
+                            data-toggle="modal"
+                            data-target="#studentLoginModal2"
+                            onClick={() => {
+                              this.setState({ stdResume: v.resume });
+                            }}
+                          >
+                            <i className="fa fa-address-card-o" />
+                          </button>
+                        </td>
+                        <td>
+                          <button
                             className="btn btn-sm btn-success"
                             data-toggle="modal"
-                            data-target="#studentLoginModal"
+                            data-target="#studentLoginModal1"
                             onClick={() => {
                               this.setState({ stdLoginEdit: v });
                             }}
@@ -219,6 +386,7 @@ class AdminDash extends Component {
                   })}
                 </tbody>
               </table>
+              {stdResume && this.studentLogin_resume()}
               {stdLoginEdit && this.studentLogin_modal()}
             </div>
             <div
