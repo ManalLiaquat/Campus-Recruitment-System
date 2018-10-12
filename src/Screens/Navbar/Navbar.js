@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Logout from "../Logout/Logout";
 import fire from "../../config/fire";
 import logo from "../../logo.svg";
+import './Navbar.css'
 
 class Navbar extends Component {
   constructor() {
@@ -35,7 +36,7 @@ class Navbar extends Component {
     const { user } = this.state;
     return (
       <nav className="navbar navbar-expand-lg navbar-light navBG">
-        <a className="navbar-brand" href="JavaScript:void(0)">
+        <a className="navbar-brand">
           <img
             src={logo}
             className="My-app-logo"
@@ -48,7 +49,7 @@ class Navbar extends Component {
           className="navbar-toggler"
           type="button"
           data-toggle="collapse"
-          data-target="JavaScript:void(0)navbarSupportedContent"
+          data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent"
           aria-expanded="false"
           aria-label="Toggle navigation"
@@ -64,19 +65,14 @@ class Navbar extends Component {
               </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="JavaScript:void(0)">
-                About
-              </a>
+              <a className="nav-link">About</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="JavaScript:void(0)">
-                Contact
-              </a>
+              <a className="nav-link">Contact</a>
             </li>
             {user ? (
               <li className="nav-item dropdown">
                 <a
-                  href="JavaScript:void(0)"
                   className="nav-link dropdown-toggle"
                   id="profileDropdownList"
                   role="button"
@@ -93,58 +89,57 @@ class Navbar extends Component {
                   <Link className="dropdown-item" to="/dashboard">
                     Dashboard
                   </Link>
-                  <a href="JavaScript:void(0)" className="dropdown-item">
+                  <a className="dropdown-item">
                     <Logout />
                   </a>
                 </div>
               </li>
             ) : (
-                <li className="nav-item dropdown">
-                  <a
-                    className="nav-link dropdown-toggle"
-                    href="JavaScript:void(0)"
-                    id="navbarDropdownMenuLink"
-                    role="button"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    Login/Signup As
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  id="navbarDropdownMenuLink"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  Login/Signup As
                 </a>
-                  <div
-                    className="dropdown-menu bg-dark"
-                    aria-labelledby="navbarDropdownMenuLink"
+                <div
+                  className="dropdown-menu bg-dark"
+                  aria-labelledby="navbarDropdownMenuLink"
+                >
+                  <Link
+                    className="dropdown-item"
+                    to="/login"
+                    onClick={() => {
+                      this.authAs("student");
+                    }}
                   >
-                    <Link
-                      className="dropdown-item"
-                      to="/login"
-                      onClick={() => {
-                        this.authAs("student");
-                      }}
-                    >
-                      Student
+                    Student
                   </Link>
-                    <Link
-                      className="dropdown-item"
-                      to="/login"
-                      onClick={() => {
-                        this.authAs("company");
-                      }}
-                    >
-                      Company
+                  <Link
+                    className="dropdown-item"
+                    to="/login"
+                    onClick={() => {
+                      this.authAs("company");
+                    }}
+                  >
+                    Company
                   </Link>
-                    <Link
-                      className="dropdown-item"
-                      to="/login"
-                      onClick={() => {
-                        this.authAs("admin");
-                      }}
-                    >
-                      Admin
+                  <Link
+                    className="dropdown-item"
+                    to="/login"
+                    onClick={() => {
+                      this.authAs("admin");
+                    }}
+                  >
+                    Admin
                   </Link>
-                  </div>
-                </li>
-              )}
+                </div>
+              </li>
+            )}
           </ul>
         </div>
       </nav>
