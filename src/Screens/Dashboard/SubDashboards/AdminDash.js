@@ -12,6 +12,7 @@ class AdminDash extends Component {
 
       cmpLogin_date: []
     };
+    this.studentLogin_remove = this.studentLogin_remove.bind(this);
   }
 
   studentLogin_FUNC() {
@@ -19,11 +20,9 @@ class AdminDash extends Component {
     fire
       .database()
       .ref("/student_data")
-      .once("value", data => {
+      .on("child_added", data => {
         let obj = data.val();
-        for (const key in obj) {
-          stdLogin_data.push(obj[key]);
-        }
+        stdLogin_data.push(obj);
         this.setState({ stdLogin_data });
       });
   }
@@ -123,6 +122,16 @@ class AdminDash extends Component {
       </div>
     );
   }
+  studentLogin_remove(uid) {
+    fire
+      .database()
+      .ref(`/student_data/${uid}`)
+      .remove()
+      .then(() => {
+        this.setState({ stdLogin_data: [] });
+        this.studentLogin_FUNC();
+      });
+  }
 
   componentDidMount() {
     fire.auth().onAuthStateChanged(user => {
@@ -196,7 +205,12 @@ class AdminDash extends Component {
                           >
                             <i className="fa fa-edit" />
                           </button>
-                          <button className="btn btn-sm btn-danger">
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => {
+                              this.studentLogin_remove(v.uid);
+                            }}
+                          >
                             <i className="fa fa-trash-o" />
                           </button>
                         </td>
@@ -236,16 +250,7 @@ class AdminDash extends Component {
                 minHeight: "75vh"
               }}
             >
-              <h3
-                className="text-center"
-                style={{
-                  margin: "10px",
-                  backgroundColor: "whitesmoke",
-                  minHeight: "75vh"
-                }}
-              >
-                Companies Post Data
-              </h3>
+              <h3 className="text-center">Companies Post Data</h3>
             </div>
           </div>
         )}
