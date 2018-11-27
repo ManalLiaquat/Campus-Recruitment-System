@@ -79,6 +79,7 @@ class StudentDash extends Component {
       .child(localStorage.getItem("uid"))
       .on("value", data => {
         let resume = data.val();
+
         // console.log(resume);
         if (resume) {
           this.setState({ checkInfo: true, resume });
@@ -322,6 +323,7 @@ class StudentDash extends Component {
       .ref("/company_jobs")
       .on("child_added", data => {
         let job = data.val();
+        jobs = []
         for (const key in job) {
           // console.log(job[key]);
           jobs.push(job[key]);
@@ -358,7 +360,7 @@ class StudentDash extends Component {
                   .database()
                   .ref(
                     `/student_data/${
-                      fire.auth().currentUser.uid
+                    fire.auth().currentUser.uid
                     }/my_applications/${companyUID}`
                   )
                   .push({
@@ -374,11 +376,12 @@ class StudentDash extends Component {
   }
 
   myApplications() {
-    const { myApplications } = this.state;
+    let { myApplications } = this.state;
     fire
       .database()
       .ref(`/student_data/${fire.auth().currentUser.uid}/my_applications`)
       .on("child_added", data => {
+        myApplications = []
         let myApps = data.val();
         // console.log(myApps);
         for (const key in myApps) {
@@ -401,8 +404,8 @@ class StudentDash extends Component {
                 checkInfo ? (
                   this.mySavedInfo()
                 ) : (
-                  this.myUnsavedInfo()
-                )
+                    this.myUnsavedInfo()
+                  )
               ) : content === "myApplications" ? (
                 <div>
                   <h1 className="text-uppercase text-success">
@@ -438,7 +441,7 @@ class StudentDash extends Component {
                       return (
                         <div
                           className="card text-white bg-dark mb-3"
-                          // style={{ maxWidth: "18rem" }}
+                        // style={{ maxWidth: "18rem" }}
                         >
                           <div className="card-header">
                             <div className="row">
@@ -488,8 +491,8 @@ class StudentDash extends Component {
                   </div>
                 </div>
               ) : (
-                <br />
-              )}
+                      <br />
+                    )}
             </div>
 
             <div className="col-md-3">
