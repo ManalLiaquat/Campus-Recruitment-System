@@ -10,7 +10,7 @@ class AdminDash extends Component {
       stdLogin_data: [],
       stdLoginEdit: {},
       stdResume: {},
-
+      stdJobs: [],
       cmpLogin_date: []
     };
     this.studentLogin_remove = this.studentLogin_remove.bind(this);
@@ -286,11 +286,23 @@ class AdminDash extends Component {
         this.studentLogin_FUNC();
       });
   }
+  studentJobs_FUNC() {
+    let { stdJobs } = this.state
+    fire.database().ref(`/student_data/`).on('value', data => {
+      let obj = data.val()
+      stdJobs = []
+      for (const key in obj) {
+        stdJobs.push(obj[key])
+        this.setState({ stdJobs })
+      }
+    })
+  }
 
   componentDidMount() {
     fire.auth().onAuthStateChanged(user => {
       if (user) {
         this.studentLogin_FUNC();
+        this.studentJobs_FUNC()
       } else {
         console.log("user Not signed in");
       }
@@ -298,7 +310,7 @@ class AdminDash extends Component {
   }
 
   render() {
-    const { show, stdLogin_data, stdLoginEdit, stdResume } = this.state;
+    const { show, stdLogin_data, stdLoginEdit, stdResume, stdJobs } = this.state;
 
     return (
       <div>
@@ -397,6 +409,64 @@ class AdminDash extends Component {
               }}
             >
               <h3 className="text-center">Students Job Data</h3>
+              <table className="table table-sm table-hover table-striped table-responsive">
+                <thead className="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">UID</th>
+                    <th scope="col">Inbox</th>
+                    <th scope="col">Applications</th>
+                    {/* <th scope="col">Manage</th> */}
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    stdJobs.map((v, i) => (
+                      <tr key={v.uid + " " + i}>
+                        <th scope="row">{i + 1}</th>
+                        <td>{v.name}</td>
+                        <td>{v.email}</td>
+                        <td>{v.password}</td>
+                        <td>{v.uid}</td>
+                        <td>
+                          <button
+                            className="btn btn-info btn-sm btn-block"
+                            data-toggle="modal"
+                            data-target="#studentLoginModal2"
+                            onClick={() => {
+                              this.setState({ stdResume: v.resume });
+                            }}
+                          >
+                            <i className="fa fa-address-card-o" />
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-sm btn-success"
+                            data-toggle="modal"
+                            data-target="#studentLoginModal1"
+                            onClick={() => {
+                              this.setState({ stdLoginEdit: v });
+                            }}
+                          >
+                            <i className="fa fa-edit" />
+                          </button>
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => {
+                              this.studentLogin_remove(v.uid);
+                            }}
+                          >
+                            <i className="fa fa-trash-o" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
         )}
