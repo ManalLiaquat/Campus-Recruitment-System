@@ -11,10 +11,12 @@ class AdminDash extends Component {
       stdLoginEdit: {},
       stdResume: {},
       stdJobs: [],
-      cmpLogin_date: []
+      cmpLogin_date: [],
+      stdApplication: {}
     };
     this.studentLogin_remove = this.studentLogin_remove.bind(this);
     this.studentLogin_resume = this.studentLogin_resume.bind(this);
+    this.studentAppliactions_modal = this.studentAppliactions_modal.bind(this);
   }
 
   studentLogin_FUNC() {
@@ -287,22 +289,127 @@ class AdminDash extends Component {
       });
   }
   studentJobs_FUNC() {
-    let { stdJobs } = this.state
-    fire.database().ref(`/student_data/`).on('value', data => {
-      let obj = data.val()
-      stdJobs = []
-      for (const key in obj) {
-        stdJobs.push(obj[key])
-        this.setState({ stdJobs })
+    let { stdJobs } = this.state;
+    fire
+      .database()
+      .ref(`/student_data/`)
+      .on("value", data => {
+        let obj = data.val();
+        stdJobs = [];
+        for (const key in obj) {
+          stdJobs.push(obj[key]);
+          this.setState({ stdJobs });
+        }
+      });
+  }
+  studentAppliactions_modal() {
+    let { stdApplication } = this.state;
+    let data = [];
+    let stdUid = stdApplication.stdUid;
+
+    for (const key in stdApplication) {
+      for (const key2 in stdApplication[key]) {
+        data.push(stdApplication[key][key2]);
       }
-    })
+    }
+
+    return data.map((v, i) => (
+      <div
+        className="modal fade"
+        id="studentApplicationModal"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="studentApplicationModal"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="studentApplicationModal">
+                Edit
+              </h5>
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              Job Tittle
+              <input
+                type="text"
+                value={v.jobTitle}
+                onChange={e => {
+                  v.jobTitle = e.target.value;
+                }}
+                className="form-control"
+              />
+              Job Description
+              <input
+                type="text"
+                value={v.jobDescription}
+                onChange={e => {
+                  v.jobDescription = e.target.value;
+                }}
+                className="form-control"
+              />
+              Company Name
+              <input
+                type="text"
+                value={v.companyName}
+                onChange={e => {
+                  v.companyEmail = e.target.value;
+                }}
+                className="form-control"
+              />
+              Company Email
+              <input
+                type="text"
+                value={v.companyEmail}
+                onChange={e => {
+                  v.companyEmail = e.target.value;
+                  this.value = e.target.value;
+                }}
+                className="form-control"
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                data-dismiss="modal"
+                onClick={() => {
+                  delete stdApplication.stdUid;
+                  fire
+                    .database()
+                    .ref(`/student_data/${stdUid}/my_applications/`)
+                    .set(stdApplication);
+                }}
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    ));
   }
 
   componentDidMount() {
     fire.auth().onAuthStateChanged(user => {
       if (user) {
         this.studentLogin_FUNC();
-        this.studentJobs_FUNC()
+        this.studentJobs_FUNC();
       } else {
         console.log("user Not signed in");
       }
@@ -310,7 +417,14 @@ class AdminDash extends Component {
   }
 
   render() {
-    const { show, stdLogin_data, stdLoginEdit, stdResume, stdJobs } = this.state;
+    const {
+      show,
+      stdLogin_data,
+      stdLoginEdit,
+      stdResume,
+      stdJobs,
+      stdApplication
+    } = this.state;
 
     return (
       <div>
@@ -422,51 +536,33 @@ class AdminDash extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {
-                    stdJobs.map((v, i) => (
-                      <tr key={v.uid + " " + i}>
-                        <th scope="row">{i + 1}</th>
-                        <td>{v.name}</td>
-                        <td>{v.email}</td>
-                        <td>{v.password}</td>
-                        <td>{v.uid}</td>
-                        <td>
-                          <button
-                            className="btn btn-info btn-sm btn-block"
-                            data-toggle="modal"
-                            data-target="#studentLoginModal2"
-                            onClick={() => {
-                              this.setState({ stdResume: v.resume });
-                            }}
-                          >
-                            <i className="fa fa-address-card-o" />
-                          </button>
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-success"
-                            data-toggle="modal"
-                            data-target="#studentLoginModal1"
-                            onClick={() => {
-                              this.setState({ stdLoginEdit: v });
-                            }}
-                          >
-                            <i className="fa fa-edit" />
-                          </button>
-                          <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => {
-                              this.studentLogin_remove(v.uid);
-                            }}
-                          >
-                            <i className="fa fa-trash-o" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  }
+                  {stdJobs.map((v, i) => (
+                    <tr key={v.uid + " " + i}>
+                      <th scope="row">{i + 1}</th>
+                      <td>{v.name}</td>
+                      <td>{v.email}</td>
+                      <td>{v.password}</td>
+                      <td>{v.uid}</td>
+                      <td>
+                        <button
+                          className="btn btn-info btn-sm btn-block"
+                          data-toggle="modal"
+                          data-target="#studentApplicationModal"
+                          onClick={() => {
+                            v.my_applications.stdUid = v.uid;
+                            this.setState({
+                              stdApplication: v.my_applications
+                            });
+                          }}
+                        >
+                          <i className="fa fa-address-card-o" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
+              {stdApplication && this.studentAppliactions_modal()}
             </div>
           </div>
         )}
