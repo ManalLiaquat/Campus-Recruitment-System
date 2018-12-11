@@ -11,12 +11,14 @@ class AdminDash extends Component {
       stdLoginEdit: {},
       stdResume: {},
       stdJobs: [],
-      cmpLogin_date: [],
-      stdApplication: {}
+      stdApplication: {},
+
+      cmpLogin_data: []
     };
     this.studentLogin_remove = this.studentLogin_remove.bind(this);
     this.studentLogin_resume = this.studentLogin_resume.bind(this);
     this.studentAppliactions_modal = this.studentAppliactions_modal.bind(this);
+    this.companyLogin_FUNC = this.companyLogin_FUNC.bind(this);
   }
 
   studentLogin_FUNC() {
@@ -405,11 +407,25 @@ class AdminDash extends Component {
     ));
   }
 
+  companyLogin_FUNC() {
+    const { cmpLogin_data } = this.state;
+    fire
+      .database()
+      .ref("/company_data")
+      .on("child_added", data => {
+        let obj = data.val();
+        // obj.resume = resume.val();
+        cmpLogin_data.push(obj);
+      });
+    this.setState({ cmpLogin_data });
+  }
+
   componentDidMount() {
     fire.auth().onAuthStateChanged(user => {
       if (user) {
         this.studentLogin_FUNC();
         this.studentJobs_FUNC();
+        this.companyLogin_FUNC();
       } else {
         console.log("user Not signed in");
       }
@@ -423,7 +439,8 @@ class AdminDash extends Component {
       stdLoginEdit,
       stdResume,
       stdJobs,
-      stdApplication
+      stdApplication,
+      cmpLogin_data
     } = this.state;
 
     return (
@@ -576,6 +593,46 @@ class AdminDash extends Component {
               }}
             >
               <h3 className="text-center">Companies login detail</h3>
+
+              <table className="table table-sm table-hover table-striped table-responsive">
+                <thead className="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">UID</th>
+                    <th scope="col">Inbox</th>
+                    <th scope="col">Manage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cmpLogin_data.map((v, i) => (
+                    <tr key={v.uid + " " + i}>
+                      <th scope="row">{i + 1}</th>
+                      <td>{v.name}</td>
+                      <td>{v.email}</td>
+                      <td>{v.password}</td>
+                      <td>{v.uid}</td>
+                      <td>
+                        <button
+                          className="btn btn-info btn-sm"
+                          data-toggle="modal"
+                          data-target="#modal_id"
+                          onClick={() => {}}
+                        >
+                          <i className="fa fa-pencil" />
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => {}}
+                        >
+                          <i className="fa fa-trash" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <div
               className="col-md-6"
