@@ -5,7 +5,7 @@ class AdminDash extends Component {
   constructor() {
     super();
     this.state = {
-      show: "student",
+      show: "company",
 
       stdLogin_data: [],
       stdLoginEdit: {},
@@ -13,12 +13,14 @@ class AdminDash extends Component {
       stdJobs: [],
       stdApplication: {},
 
-      cmpLogin_data: []
+      cmpLogin_data: [],
+      cmpLogin_modal: {}
     };
     this.studentLogin_remove = this.studentLogin_remove.bind(this);
     this.studentLogin_resume = this.studentLogin_resume.bind(this);
     this.studentAppliactions_modal = this.studentAppliactions_modal.bind(this);
     this.companyLogin_FUNC = this.companyLogin_FUNC.bind(this);
+    this.companyLogin_Modal = this.companyLogin_Modal.bind(this);
   }
 
   studentLogin_FUNC() {
@@ -373,7 +375,6 @@ class AdminDash extends Component {
                 value={v.companyEmail}
                 onChange={e => {
                   v.companyEmail = e.target.value;
-                  this.value = e.target.value;
                 }}
                 className="form-control"
               />
@@ -418,6 +419,103 @@ class AdminDash extends Component {
         cmpLogin_data.push(obj);
       });
     this.setState({ cmpLogin_data });
+  }
+  companyLogin_Modal() {
+    const cmp = this.state.cmpLogin_modal;
+    console.log(cmp);
+
+    return (
+      <div
+        class="modal fade"
+        id="cmp-login"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="cmp-login-Label"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="cmp-loginLabel">
+                Edit
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Name
+              <input
+                type="text"
+                className="form-control"
+                value={cmp.name}
+                onChange={e => {
+                  cmp.name = e.target.value;
+                  this.setState({ cmpLogin_modal: cmp });
+                }}
+              />
+              Email
+              <input
+                type="text"
+                className="form-control"
+                value={cmp.email}
+                onChange={e => {
+                  cmp.email = e.target.value;
+                  this.setState({ cmpLogin_modal: cmp });
+                }}
+              />
+              Password
+              <input
+                type="text"
+                className="form-control"
+                value={cmp.password}
+                onChange={e => {
+                  cmp.password = e.target.value;
+                  this.setState({ cmpLogin_modal: cmp });
+                }}
+              />
+              UID
+              <input
+                type="text"
+                className="form-control"
+                value={cmp.uid}
+                onChange={e => {
+                  cmp.uid = e.target.value;
+                  this.setState({ cmpLogin_modal: cmp });
+                }}
+              />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-dismiss="modal"
+                onClick={() => {
+                  fire
+                    .database()
+                    .ref(`/company_data/${cmp.uid}/`)
+                    .set(cmp);
+                }}
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   componentDidMount() {
@@ -617,8 +715,12 @@ class AdminDash extends Component {
                         <button
                           className="btn btn-info btn-sm"
                           data-toggle="modal"
-                          data-target="#modal_id"
-                          onClick={() => {}}
+                          data-target="#cmp-login"
+                          onClick={() => {
+                            this.setState({
+                              cmpLogin_modal: v
+                            });
+                          }}
                         >
                           <i className="fa fa-pencil" />
                         </button>
@@ -632,6 +734,7 @@ class AdminDash extends Component {
                     </tr>
                   ))}
                 </tbody>
+                {this.companyLogin_Modal()}
               </table>
             </div>
             <div
