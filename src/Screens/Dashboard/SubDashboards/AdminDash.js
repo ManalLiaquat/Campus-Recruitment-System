@@ -422,7 +422,20 @@ class AdminDash extends Component {
   }
   companyLogin_Modal() {
     const cmp = this.state.cmpLogin_modal;
-    console.log(cmp);
+    var hire = [];
+    var inbox = [];
+
+    for (const key in cmp.hire) {
+      hire.push(cmp.hire[key]);
+    }
+
+    for (const key in cmp.inbox) {
+      var flagArr = [];
+      for (const key2 in cmp.inbox[key]) {
+        flagArr.push(cmp.inbox[key][key2]);
+      }
+      inbox.push({ [key]: flagArr });
+    }
 
     return (
       <div
@@ -489,6 +502,63 @@ class AdminDash extends Component {
                   this.setState({ cmpLogin_modal: cmp });
                 }}
               />
+              <hr />
+              {hire.map((v, i) => {
+                // console.log(v);
+
+                return (
+                  <div className="accordion" id="accordionExample">
+                    <div class="card">
+                      <div class="card-header" id={`heading${i}`}>
+                        <h5 class="mb-0">
+                          <button
+                            class="btn btn-link"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target={`#collapse${i}`}
+                            aria-expanded="true"
+                            aria-controls={`collapse${i}`}
+                          >
+                            {v.name}
+                          </button>
+                        </h5>
+                      </div>
+
+                      <div
+                        id={`collapse${i}`}
+                        class="collapse"
+                        aria-labelledby={`heading${i}`}
+                        data-parent="#accordionExample"
+                      >
+                        <div class="card-body">
+                          Name
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={v.name}
+                            onChange={e => {
+                              v.name = e.target.value;
+                              cmp.hire[v.uid] = v;
+                              this.setState({ cmpLogin_modal: cmp });
+                            }}
+                          />
+                          Father Name
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={v.fatherName}
+                            onChange={e => {
+                              v.fatherName = e.target.value;
+                              cmp.hire[v.uid] = v;
+                              this.setState({ cmpLogin_modal: cmp });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             <div class="modal-footer">
               <button
