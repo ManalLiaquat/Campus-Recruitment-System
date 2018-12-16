@@ -429,14 +429,6 @@ class AdminDash extends Component {
       hire.push(cmp.hire[key]);
     }
 
-    for (const key in cmp.inbox) {
-      var flagArr = [];
-      for (const key2 in cmp.inbox[key]) {
-        flagArr.push(cmp.inbox[key][key2]);
-      }
-      inbox.push({ [key]: flagArr });
-    }
-
     return (
       <div
         class="modal fade"
@@ -504,8 +496,6 @@ class AdminDash extends Component {
               />
               <hr />
               {hire.map((v, i) => {
-                // console.log(v);
-
                 return (
                   <div className="accordion" id="accordionExample">
                     <div class="card">
@@ -520,6 +510,19 @@ class AdminDash extends Component {
                             aria-controls={`collapse${i}`}
                           >
                             {v.name}
+                          </button>
+                          <button
+                            class="btn btn-danger pull-right"
+                            onClick={() => {
+                              delete cmp.hire[v.uid];
+                              this.setState({ cmpLogin_modal: cmp });
+                              fire
+                                .database()
+                                .ref(`/company_data/${cmp.uid}/`)
+                                .set(cmp);
+                            }}
+                          >
+                            <i className="fa fa-close" />
                           </button>
                         </h5>
                       </div>
@@ -549,6 +552,28 @@ class AdminDash extends Component {
                             value={v.fatherName}
                             onChange={e => {
                               v.fatherName = e.target.value;
+                              cmp.hire[v.uid] = v;
+                              this.setState({ cmpLogin_modal: cmp });
+                            }}
+                          />
+                          Email
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={v.email}
+                            onChange={e => {
+                              v.email = e.target.value;
+                              cmp.hire[v.uid] = v;
+                              this.setState({ cmpLogin_modal: cmp });
+                            }}
+                          />
+                          UID
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={v.uid}
+                            onChange={e => {
+                              v.uid = e.target.value;
                               cmp.hire[v.uid] = v;
                               this.setState({ cmpLogin_modal: cmp });
                             }}
